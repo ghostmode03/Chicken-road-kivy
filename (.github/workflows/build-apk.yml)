@@ -1,0 +1,33 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - main # Or your default branch
+  pull_request:
+    branches:
+      - main # Or your default branch
+
+jobs:
+  build_android:
+    runs-on: ubuntu-latest # Linux runner is generally recommended for Buildozer
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # This single step replaces the manual installation of Buildozer and its dependencies
+    - name: Buildozer action
+      uses: ArtemSBulgakov/buildozer-action@v1.2.0 # You might want to check for a newer version if available
+      with:
+        # Optional: Specify the build command. 'debug' is good for testing.
+        # For release builds, you'd typically use 'release' after setting up signing in buildozer.spec
+        command: 'android debug'
+        # Optional: Specify the Python version Buildozer should use internally
+        # python-version: '3.9' # Uncomment and set if needed, otherwise it uses a default
+
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-apk
+        path: bin/*.apk # Buildozer places the APKs in the 'bin' directory
